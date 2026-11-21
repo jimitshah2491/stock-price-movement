@@ -18,8 +18,83 @@ price analysis will keep the share classes distinct.
 - Learn and implement LangGraph, an agent harness, and retrieval-augmented
   generation (RAG) through practical features.
 
-The project is currently in the planning stage. The architecture and milestones
-below describe intended work, not existing capabilities.
+The Python project foundation is implemented. Research, ingestion, and forecasting
+capabilities described below are planned and are not yet implemented.
+
+## Development setup
+
+Use [uv](https://docs.astral.sh/uv/) for Python versions, dependency management,
+the local virtual environment, and reproducible dependency locking. On macOS,
+install uv with Homebrew if needed:
+
+```bash
+brew install uv
+```
+
+From the repository root:
+
+```bash
+uv sync --locked
+uv run stock-price-movement --help
+uv run stock-price-movement config
+```
+
+The project pins Python 3.12 in `.python-version`. uv downloads it when needed and
+creates `.venv`, leaving macOS's system Python unchanged. Initial setup requires
+network access. Commit `pyproject.toml`, `.python-version`, and `uv.lock`; keep
+`.venv`, secrets, and generated data out of version control.
+
+The starter CLI displays help, version information, and local configuration. It
+does not fetch financial data or call a model. The module entry point also works:
+
+```bash
+uv run python -m stock_price_movement config
+```
+
+### Configuration
+
+Defaults work without a configuration file or API keys. Optionally copy
+`.env.example` to `.env` and edit it. Settings are read when a command needs them;
+environment variables take precedence over `.env`, which takes precedence over
+defaults.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `SPM_DATA_DIR` | `data` | Root for future local documents, databases, and reports |
+| `SPM_LOG_LEVEL` | `INFO` | One of DEBUG, INFO, WARNING, ERROR, or CRITICAL |
+
+Run commands from the repository root so `.env` and relative paths resolve
+consistently. The `config` command resolves the data path but does not create it.
+If overriding the data directory, ensure that location is also excluded from Git.
+
+### Dependencies and quality checks
+
+```bash
+uv add package-name              # Add a runtime dependency and update uv.lock
+uv add --dev package-name        # Add a development dependency
+uv run ruff check .
+uv run ruff format --check .
+uv build
+```
+
+Runtime dependencies currently provide validated environment configuration through
+`pydantic-settings`. Ruff supplies development linting and formatting. LangGraph,
+retrieval, model integrations, and test tooling will be added with their features.
+
+### Project layout
+
+```text
+docs/                       Product requirements
+src/stock_price_movement/
+    __init__.py             Package
+    __main__.py             Module entry point
+    cli.py                  Command-line interface
+    config.py               Validated local settings
+.env.example                Optional configuration template
+.python-version             Development Python version
+pyproject.toml              Package metadata and dependency declarations
+uv.lock                     Resolved dependency versions
+```
 
 ## Research inputs
 
